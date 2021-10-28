@@ -17,7 +17,9 @@ class _ChattileState extends State<Chattile> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ChatDetailScreen())),
+          context,
+          MaterialPageRoute(
+              builder: (context) => ChatDetailScreen(data: widget.data))),
       child: ListTile(
         leading: CircleAvatar(
             radius: 20,
