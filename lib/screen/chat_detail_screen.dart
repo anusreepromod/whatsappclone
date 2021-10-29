@@ -12,6 +12,22 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   bool showemoji = false;
+  FocusNode _focusNode = FocusNode();
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        print("if");
+        setState(() {
+          showemoji = false;
+        });
+      } else {
+        print("else");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,43 +90,58 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             }),
           ]),
       body: Container(
-        color: Colors.red,
+        color: Colors.blueGrey,
         child: Stack(children: [
-          ListView.builder(itemBuilder: (context, index) {
-            return Text("index:${index / 2}");
-          }),
+          ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) {
+                return Text("index:${index / 2}");
+              }),
           Align(
               alignment: Alignment.bottomCenter,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    child: Card(
-                      child: TextField(
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                              hintText: "Type a message",
-                              prefixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      showemoji = !showemoji;
-                                    });
-                                  },
-                                  icon: Icon(showemoji
-                                      ? Icons.keyboard
-                                      : Icons.emoji_emotions_outlined)),
-                              suffixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.attach_file),
-                                  Icon(Icons.camera_alt)
-                                ],
-                              ))),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                    ),
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.blue,
+                  Row(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width - 60,
+                        child: Card(
+                          child: TextField(
+                              focusNode: _focusNode,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                  hintText: "Type a message",
+                                  prefixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _focusNode.unfocus();
+                                          showemoji = !showemoji;
+                                        });
+                                      },
+                                      icon: Icon(showemoji
+                                          ? Icons.keyboard
+                                          : Icons.emoji_emotions_outlined)),
+                                  suffixIcon: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.attach_file),
+                                      Icon(Icons.camera_alt)
+                                    ],
+                                  ))),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: CircleAvatar(
+                          backgroundColor: Color(0xFF075E54),
+                          radius: 25,
+                          child: Icon(Icons.mic),
+                        ),
+                      )
+                    ],
                   ),
                   showemoji ? selectEmoji() : Container(),
                 ],
@@ -121,8 +152,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   Widget selectEmoji() {
-    return EmojiPicker(onEmojiSelected: (emoji, category) {
-      print(emoji.name);
+    return EmojiPicker(
+        // recommendedKeywords:['racing','horse'],
+        onEmojiSelected: (emoji, category) {
+      print(emoji.emoji);
+      print(category);
     });
   }
 }
