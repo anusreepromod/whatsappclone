@@ -1,7 +1,9 @@
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/models/chat_model.dart';
+import 'package:whatsapp_clone/models/single_chat_model.dart';
 import 'package:whatsapp_clone/models/widgets/utility_widgets.dart';
+import 'package:whatsapp_clone/screen/chat_bubble_widget.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   ChatDetailScreen({Key? key, required this.data}) : super(key: key);
@@ -11,8 +13,18 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  TextEditingController messageController = TextEditingController();
   bool showemoji = false;
   FocusNode _focusNode = FocusNode();
+  bool showSend = false;
+  List<SingleChat> chats = [
+    SingleChat(isSend: true, isReaded: true, message: "hello", sendAt: "2pm"),
+    SingleChat(isSend: false, isReaded: false, message: "hi", sendAt: "3pm"),
+    SingleChat(isSend: true, isReaded: true, message: "hello", sendAt: "4pm"),
+    SingleChat(isSend: false, isReaded: false, message: "hi", sendAt: "5pm"),
+    SingleChat(isSend: true, isReaded: true, message: "hello", sendAt: "6pm"),
+    SingleChat(isSend: false, isReaded: false, message: "hi", sendAt: "7pm")
+  ];
   @override
   void initState() {
     super.initState();
@@ -92,10 +104,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       body: Container(
         color: Colors.blueGrey,
         child: Stack(children: [
+          Image.asset(
+            "assets/images/WhatsApp2.jpeg",
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
           ListView.builder(
-              itemCount: 5,
+              itemCount: chats.length,
               itemBuilder: (context, index) {
-                return Text("index:${index / 2}");
+                return ChatBubble(
+                  data: chats[index],
+                );
               }),
           Align(
               alignment: Alignment.bottomCenter,
@@ -108,6 +127,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         width: MediaQuery.of(context).size.width - 60,
                         child: Card(
                           child: TextField(
+                              onChanged: (value) {
+                                print(value);
+                                if (value.length > 0) {
+                                  setState(() {
+                                    showSend = true;
+                                  });
+                                } else {
+                                  setState(() {
+                                    showSend = false;
+                                  });
+                                }
+                              },
+                              controller: messageController,
                               focusNode: _focusNode,
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
@@ -125,7 +157,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   suffixIcon: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.attach_file),
+                                      IconButton(
+                                        onPressed: () {
+                                          print("hi");
+                                          showModalBottomSheet(
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              context: context,
+                                              builder: (builder) => menu());
+                                        },
+                                        icon: Icon(Icons.attach_file),
+                                      ),
                                       Icon(Icons.camera_alt)
                                     ],
                                   ))),
@@ -133,12 +175,20 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                               borderRadius: BorderRadius.circular(20)),
                         ),
                       ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                      //   child: CircleAvatar(
+                      //     backgroundColor: Color(0xFF075E54),
+                      //     radius: 15,
+                      //     child: Icon(Icons.send),
+                      //   ),
+                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: CircleAvatar(
                           backgroundColor: Color(0xFF075E54),
                           radius: 25,
-                          child: Icon(Icons.mic),
+                          child: Icon(showSend ? Icons.send : Icons.mic),
                         ),
                       )
                     ],
@@ -151,10 +201,79 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
+  Widget menu() {
+    return Container(
+        height: 250,
+        width: MediaQuery.of(context).size.width,
+        child: Card(
+          margin: EdgeInsets.all(10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    iconGen(Icon(Icons.insert_drive_file), Colors.indigo,
+                        'Document', () {
+                      print("Document pressed");
+                    }),
+                    iconGen(Icon(Icons.camera_alt), Colors.pink, 'Camera', () {
+                      print("camera");
+                    }),
+                    iconGen(Icon(Icons.insert_photo), Colors.purple, 'Gallery',
+                        () {
+                      print("photo");
+                    }),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    iconGen(Icon(Icons.headset), Colors.orange, 'Audio', () {}),
+                    iconGen(Icon(Icons.location_pin), Colors.teal, 'Location',
+                        () {}),
+                    iconGen(Icon(Icons.person), Colors.blue, 'Contact', () {}),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ));
+  }
+
+  Widget iconGen(Icon icon, Color color, String text, Function onTap) {
+    return GestureDetector(
+      onTap: () {
+        onTap();
+      },
+      child: Column(
+        children: [
+          CircleAvatar(
+            backgroundColor: color,
+            radius: 30,
+            child: icon,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            text,
+            style: TextStyle(fontSize: 10),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget selectEmoji() {
     return EmojiPicker(
         // recommendedKeywords:['racing','horse'],
         onEmojiSelected: (emoji, category) {
+      messageController.text = emoji.emoji;
       print(emoji.emoji);
       print(category);
     });

@@ -49,13 +49,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage(
-                "assets/images/WhatsApp.jpeg",
-              ),
-              fit: BoxFit.contain),
+      body: Center(
+        child: Container(
+          height: 150,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(
+                  "assets/images/WhatsApp.jpeg",
+                ),
+                fit: BoxFit.contain),
+          ),
         ),
       ),
     );

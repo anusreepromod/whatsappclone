@@ -24,9 +24,9 @@ class _ChattileState extends State<Chattile> {
         leading: CircleAvatar(
             radius: 20,
             child: widget.data.isGroup == true ? Text("A") : Text("B")),
-        // child: SvgPicture.asset(widget.data.isGroup == true
-        //     ? "assets/svg/groups_black_24dp.svg"
-        //     : "assets/svg/face_black_24dp.svg"),
+        //   child: SvgPicture.asset(widget.data.isGroup == true
+        //       ? "assets/svg/groups_black_24dp.svg"
+        //       : "assets/svg/face_black_24dp.svg"),
         // ),
         //   child: widget.data.avatar == ""
         //       ? SvgPicture.asset(widget.data.isGroup == true
